@@ -16,7 +16,16 @@ const projects = [
       "SQL Server",
       "JWT Auth",
     ],
-    githubUrl: "https://github.com/vaibhavkdev/Student-Feedback-Portal",
+    codeLinks: [
+      {
+        label: "Frontend Code",
+        url: "https://github.com/vaibhavkdev/StudentFeedbackPortal",
+      },
+      {
+        label: "API Code",
+        url: "https://github.com/vaibhavkdev/studentFeedbackPortalAPI",
+      },
+    ],
     demoUrl: "",
   },
   {
@@ -31,82 +40,104 @@ const projects = [
       "ASP.NET Core Web API",
       "Entity Framework",
       "SQL Server",
-      "JWT Auth"
+      "JWT Auth",
     ],
-    githubUrl: "https://github.com/vaibhavkdev/InvestiFy",
-    demoUrl: "", 
+    codeLinks: [
+      { label: "Code", url: "https://github.com/vaibhavkdev/InvestiFy" },
+    ],
+    demoUrl: "",
   },
 ];
-
 
 export const ProjectsSection = () => {
   return (
     <section id="projects" className="py-24 px-4 relative">
-      <div className="container mx-auto max-w-5xl">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center">
-          {" "}
-          Featured <span className="text-primary"> Projects </span>
-        </h2>
+      <div className="container mx-auto max-w-6xl">
+        {/* Section heading */}
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold">
+            Featured <span className="text-primary"> Projects</span>
+          </h2>
+          <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-primary" />
+          <p className="text-muted-foreground mt-6 max-w-2xl mx-auto leading-relaxed">
+            Here are some of my recent projects. Each project was carefully
+            crafted with attention to detail, performance, and user experience.
+          </p>
+        </div>
 
-        <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
-          Here are some of my recent projects. Each project was carefully
-          crafted with attention to detail, performance, and user experience.
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, key) => (
-            <div
-              key={key}
-              className="group bg-card rounded-lg overflow-hidden shadow-xs card-hover"
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {projects.map((project) => (
+            <article
+              key={project.id}
+              className="group flex flex-col bg-card rounded-2xl overflow-hidden border border-border/60 shadow-xs card-hover"
             >
-              <div className="h-48 overflow-hidden">
+              <div className="aspect-video overflow-hidden bg-secondary">
                 <img
                   src={project.image}
                   alt={project.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  loading="lazy"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
 
-              <div className="p-6">
-                <div className="flex flex-wrap gap-2 mb-4">
+              <div className="flex flex-col flex-1 p-6 md:p-8">
+                <h3 className="text-xl md:text-2xl font-semibold mb-2">
+                  {project.title}
+                </h3>
+
+                <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-5">
+                  {project.description}
+                </p>
+
+                <div className="flex flex-wrap gap-2 mb-6">
                   {project.tags.map((tag) => (
-                    <span className="px-2 py-1 text-xs font-medium border rounded-full bg-secondary text-secondary-foreground">
+                    <span
+                      key={tag}
+                      className="px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary border border-primary/20"
+                    >
                       {tag}
                     </span>
                   ))}
                 </div>
 
-                <h3 className="text-xl font-semibold mb-1"> {project.title}</h3>
-                <p className="text-muted-foreground text-sm mb-4">
-                  {project.description}
-                </p>
-                <div className="flex justify-between items-center">
-                  <div className="flex space-x-3">
-                    {/* <a
+                <div className="mt-auto pt-5 border-t border-border/60 flex flex-wrap items-center gap-3">
+                  {project.codeLinks.map((link) => (
+                    <a
+                      key={link.url}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${project.title} ${link.label} on GitHub`}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary text-primary text-sm font-medium hover:bg-primary/10 transition-colors duration-300"
+                    >
+                      <Github size={16} />
+                      {link.label}
+                    </a>
+                  ))}
+
+                  {project.demoUrl && (
+                    <a
                       href={project.demoUrl}
                       target="_blank"
-                      className="text-foreground/80 hover:text-primary transition-colors duration-300"
+                      rel="noopener noreferrer"
+                      aria-label={`${project.title} live demo`}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors duration-300"
                     >
-                      <ExternalLink size={20} />
-                    </a> */}
-                    <a
-                      href={project.githubUrl}
-                      target="_blank"
-                      className="text-foreground/80 hover:text-primary transition-colors duration-300"
-                    >
-                      <Github size={20} />
+                      <ExternalLink size={16} />
+                      Live Demo
                     </a>
-                  </div>
+                  )}
                 </div>
               </div>
-            </div>
+            </article>
           ))}
         </div>
 
-        <div className="text-center mt-12">
+        <div className="text-center mt-14">
           <a
             className="cosmic-button w-fit flex items-center mx-auto gap-2"
             target="_blank"
+            rel="noopener noreferrer"
             href="https://github.com/vaibhavkdev"
           >
             Check My Github <ArrowRight size={16} />

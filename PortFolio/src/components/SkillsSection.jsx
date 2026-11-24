@@ -1,29 +1,49 @@
 import { useState } from "react";
+import { Layout, Server, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const skills = [
-  // Backend - .NET
-  { name: "C#", level: 90, category: "backend" },
-  { name: "ASP.NET Core Web API", level: 90, category: "backend" },
-  { name: "Entity Framework Core", level: 90, category: "backend" },
-  { name: ".NET Technologies", level: 85, category: "backend" },
-  { name: "RESTful APIs", level: 90, category: "backend" },
-  { name: "Web Services", level: 90, category: "backend" },
-  { name: "SQL Server", level: 95, category: "backend" },
-
-  // Frontend
-  { name: "React", level: 85, category: "frontend" },
-  { name: "Angular", level: 75, category: "frontend" },
-  { name: "JavaScript", level: 85, category: "frontend" },
-  { name: "TypeScript", level: 70, category: "frontend" },
-  { name: "HTML", level: 90, category: "frontend" },
-  { name: "Tailwind CSS", level: 85, category: "frontend" },
-
-  // Tools
-  { name: "Postman / Thunder Client", level: 95, category: "tools" },
-  { name: "Swagger", level: 70, category: "tools" },
-  { name: "Git", level: 90, category: "tools" },
-  { name: "OOP Principles", level: 90, category: "tools" },
+const skillGroups = [
+  {
+    category: "backend",
+    title: "Backend",
+    icon: <Server className="h-6 w-6 text-primary" />,
+    skills: [
+      "C#",
+      "ASP.NET Core Web API",
+      "Entity Framework Core",
+      ".NET Technologies",
+      "RESTful APIs",
+      "Web Services",
+      "SQL Server",
+      "Node.js",
+      "Express.js",
+      "MongoDB",
+    ],
+  },
+  {
+    category: "frontend",
+    title: "Frontend",
+    icon: <Layout className="h-6 w-6 text-primary" />,
+    skills: [
+      "React",
+      "JavaScript",
+      "TypeScript",
+      "HTML",
+      "Tailwind CSS",
+    ],
+  },
+  {
+    category: "tools",
+    title: "Tools & Practices",
+    icon: <Wrench className="h-6 w-6 text-primary" />,
+    skills: [
+      "Postman / Thunder Client",
+      "Swagger",
+      "Git",
+      "Jira",
+      "OOP Principles",
+    ],
+  },
 ];
 
 const categories = ["all", "frontend", "backend", "tools"];
@@ -31,26 +51,38 @@ const categories = ["all", "frontend", "backend", "tools"];
 export const SkillsSection = () => {
   const [activeCategory, setActiveCategory] = useState("all");
 
-  const filteredSkills = skills.filter(
-    (skill) => activeCategory === "all" || skill.category === activeCategory
+  const filteredGroups = skillGroups.filter(
+    (group) => activeCategory === "all" || group.category === activeCategory
   );
+
   return (
     <section id="skills" className="py-24 px-4 relative bg-secondary/30">
-      <div className="container mx-auto max-w-5xl">
-        <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
-          My <span className="text-primary"> Skills</span>
-        </h2>
+      <div className="container mx-auto max-w-6xl">
+        {/* Section heading */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold">
+            My <span className="text-primary"> Skills</span>
+          </h2>
+          <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-primary" />
+        </div>
 
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
-          {categories.map((category, key) => (
+        {/* Category filter */}
+        <div
+          role="group"
+          aria-label="Filter skills by category"
+          className="flex flex-wrap justify-center gap-3 mb-12"
+        >
+          {categories.map((category) => (
             <button
-              key={key}
+              key={category}
               onClick={() => setActiveCategory(category)}
+              aria-pressed={activeCategory === category}
               className={cn(
-                "px-5 py-2 rounded-full transition-colors duration-300 capitalize",
+                "px-5 py-2 rounded-full border text-sm font-medium capitalize transition-colors duration-300",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                 activeCategory === category
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary/70 text-forefround hover:bd-secondary"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card text-foreground border-border hover:border-primary/50 hover:bg-secondary"
               )}
             >
               {category}
@@ -58,27 +90,35 @@ export const SkillsSection = () => {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredSkills.map((skill, key) => (
+        {/* Grouped skills */}
+        <div
+          className={cn(
+            "grid grid-cols-1 gap-6",
+            filteredGroups.length > 1 ? "lg:grid-cols-3" : "max-w-2xl mx-auto"
+          )}
+        >
+          {filteredGroups.map((group) => (
             <div
-              key={key}
-              className="bg-card p-6 rounded-lg shadow-xs card-hover"
+              key={group.category}
+              className="bg-card p-6 md:p-8 rounded-2xl border border-border/60 shadow-xs card-hover"
             >
-              <div className="text-left mb-4">
-                <h3 className="font-semibold text-lg"> {skill.name}</h3>
-              </div>
-              <div className="w-full bg-secondary/50 h-2 rounded-full overflow-hidden">
-                <div
-                  className="bg-primary h-2 rounded-full origin-left animate-[grow_1.5s_ease-out]"
-                  style={{ width: skill.level + "%" }}
-                />
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-3 rounded-xl bg-primary/10 shrink-0">
+                  {group.icon}
+                </div>
+                <h3 className="font-semibold text-xl">{group.title}</h3>
               </div>
 
-              <div className="text-right mt-1">
-                <span className="text-sm text-muted-foreground">
-                  {skill.level}%
-                </span>
-              </div>
+              <ul className="flex flex-wrap gap-2">
+                {group.skills.map((skill) => (
+                  <li
+                    key={skill}
+                    className="px-3 py-1.5 rounded-lg text-sm font-medium bg-primary/10 text-primary border border-primary/20"
+                  >
+                    {skill}
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>

@@ -1,28 +1,20 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-// id, size, x, y, opacity, animationDuration
-// id, size, x, y, delay, animationDuration
+// star:   id, size, x, y, opacity, animationDuration
+// meteor: id, size, x, y, delay, animationDuration
+
+const MAX_STARS = 150;
+const NUMBER_OF_METEORS = 4;
 
 export const StarBackground = () => {
   const [stars, setStars] = useState([]);
   const [meteors, setMeteors] = useState([]);
+  const [reduceMotion, setReduceMotion] = useState(false);
 
-  useEffect(() => {
-    generateStars();
-    generateMeteors();
-
-    const handleResize = () => {
-      generateStars();
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const generateStars = () => {
-    const numberOfStars = Math.floor(
-      (window.innerWidth * window.innerHeight) / 10000
+  const generateStars = useCallback(() => {
+    const numberOfStars = Math.min(
+      Math.floor((window.innerWidth * window.innerHeight) / 10000),
+      MAX_STARS,
     );
 
     const newStars = [];
@@ -39,13 +31,12 @@ export const StarBackground = () => {
     }
 
     setStars(newStars);
-  };
+  }, []);
 
-  const generateMeteors = () => {
-    const numberOfMeteors = 4;
+  const generateMeteors = useCallback(() => {
     const newMeteors = [];
 
-    for (let i = 0; i < numberOfMeteors; i++) {
+    for (let i = 0; i < NUMBER_OF_METEORS; i++) {
       newMeteors.push({
         id: i,
         size: Math.random() * 2 + 1,
@@ -57,14 +48,42 @@ export const StarBackground = () => {
     }
 
     setMeteors(newMeteors);
-  };
+  }, []);
+
+  useEffect(() => {
+    // Respect the visitor's "reduce motion" system setting
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduceMotion(motionQuery.matches);
+    const handleMotionChange = (e) => setReduceMotion(e.matches);
+    motionQuery.addEventListener("change", handleMotionChange);
+
+    generateStars();
+    generateMeteors();
+
+    // Regenerate stars only after resizing has stopped
+    let resizeTimer;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(generateStars, 250);
+    };
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      clearTimeout(resizeTimer);
+      window.removeEventListener("resize", handleResize);
+      motionQuery.removeEventListener("change", handleMotionChange);
+    };
+  }, [generateStars, generateMeteors]);
 
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+    <div
+      aria-hidden="true"
+      className="fixed inset-0 overflow-hidden pointer-events-none z-0"
+    >
       {stars.map((star) => (
         <div
           key={star.id}
-          className="star animate-pulse-subtle"
+          className={reduceMotion ? "star" : "star animate-pulse-subtle"}
           style={{
             width: star.size + "px",
             height: star.size + "px",
@@ -76,20 +95,21 @@ export const StarBackground = () => {
         />
       ))}
 
-      {meteors.map((meteor) => (
-        <div
-          key={meteor.id}
-          className="meteor animate-meteor"
-          style={{
-            width: meteor.size * 50 + "px",
-            height: meteor.size * 2 + "px",
-            left: meteor.x + "%",
-            top: meteor.y + "%",
-            animationDelay: meteor.delay,
-            animationDuration: meteor.animationDuration + "s",
-          }}
-        />
-      ))}
+      {!reduceMotion &&
+        meteors.map((meteor) => (
+          <div
+            key={meteor.id}
+            className="meteor animate-meteor"
+            style={{
+              width: meteor.size * 50 + "px",
+              height: meteor.size * 2 + "px",
+              left: meteor.x + "%",
+              top: meteor.y + "%",
+              animationDelay: meteor.delay + "s",
+              animationDuration: meteor.animationDuration + "s",
+            }}
+          />
+        ))}
     </div>
   );
 };
